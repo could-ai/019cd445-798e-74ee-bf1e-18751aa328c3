@@ -37,7 +37,7 @@ class _HomeScreenState extends State<HomeScreen> {
           .maybeSingle();
 
       if (data != null) {
-        _nameController.text = data['full_name'] ?? '';
+        _nameController.text = data['user_name'] ?? '';
         _bioController.text = data['handicap'] ?? '';
       }
     } catch (e) {
@@ -57,7 +57,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
       final updates = {
         'auth_user_id': userId,
-        'full_name': _nameController.text,
+        'user_name': _nameController.text,
         'handicap': _bioController.text,
       };
 
@@ -129,7 +129,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     controller: _bioController,
                     maxLines: 3,
                     decoration: const InputDecoration(
-                      labelText: 'Bio',
+                      labelText: 'Handicap',
                       border: OutlineInputBorder(),
                       alignLabelWithHint: true,
                     ),
