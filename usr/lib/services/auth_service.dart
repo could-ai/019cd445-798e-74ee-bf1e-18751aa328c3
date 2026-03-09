@@ -1,31 +1,44 @@
-// Mock AuthService for Supabase Phone Auth
-// Note: Since no Supabase project is currently connected, this service uses mock delays.
-// Once a project is connected, you can replace these with actual Supabase SDK calls.
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class AuthService {
-  /// Simulates sending an OTP to the user's phone number.
-  /// Future implementation: await supabase.auth.signInWithOtp(phone: phoneNumber);
+  final _supabase = Supabase.instance.client;
+
+  /// Sends an OTP to the user's phone number using Supabase.
   Future<bool> sendOtp(String phoneNumber) async {
-    // Simulate network delay
-    await Future.delayed(const Duration(seconds: 1));
-    
-    // Mock success
-    return true;
+    try {
+      await _supabase.auth.signInWithOtp(phone: phoneNumber);
+      return true;
+    } catch (e) {
+      print('Error sending OTP: $e');
+      return false;
+    }
   }
 
-  /// Simulates verifying the OTP sent to the user's phone.
-  /// Future implementation: await supabase.auth.verifyOTP(phone: phoneNumber, token: otp, type: OtpType.sms);
+  /// Verifies the OTP sent to the user's phone using Supabase.
   Future<bool> verifyOtp(String phoneNumber, String otp) async {
-    // Simulate network delay
-    await Future.delayed(const Duration(seconds: 1));
-    
-    // Mock verification (accepts '123456' for testing purposes)
-    return otp == '123456';
+    try {
+      final response = await _supabase.auth.verifyOTP(
+        phone: phoneNumber,
+        token: otp,
+        type: OtpType.sms,
+      );
+      // If session is not null, the user is successfully logged in
+      return response.session != null;
+    } catch (e) {
+      print('Error verifying OTP: $e');
+      return false;
+    }
   }
   
-  /// Simulates logging out.
-  /// Future implementation: await supabase.auth.signOut();
+  /// Logs out the current user.
   Future<void> signOut() async {
-    await Future.delayed(const Duration(milliseconds: 500));
+    try {
+      await _supabase.auth.signOut();
+    } catch (e) {
+      print('Error signing out: $e');
+    }
   }
+
+  /// Gets the current authenticated user
+  User? get currentUser => _supabase.auth.currentUser;
 }

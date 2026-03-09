@@ -24,14 +24,23 @@ class _LoginScreenState extends State<LoginScreen> {
 
     setState(() => _isLoading = true);
     
-    // Call our mock auth service (which will later be wired to Supabase)
+    // Call the real Supabase auth service
     final success = await _authService.sendOtp(phone);
     
     setState(() => _isLoading = false);
 
-    if (success && mounted) {
-      // Navigate to OTP screen and pass the phone number as an argument
-      Navigator.pushNamed(context, '/otp', arguments: phone);
+    if (mounted) {
+      if (success) {
+        // Navigate to OTP screen and pass the phone number as an argument
+        Navigator.pushNamed(context, '/otp', arguments: phone);
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Failed to send OTP. Ensure phone number includes country code (e.g. +1).'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
     }
   }
 

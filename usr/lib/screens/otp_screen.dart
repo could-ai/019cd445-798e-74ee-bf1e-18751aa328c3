@@ -24,7 +24,7 @@ class _OtpScreenState extends State<OtpScreen> {
 
     setState(() => _isLoading = true);
     
-    // Call our mock auth service to verify the OTP
+    // Call the real Supabase auth service to verify the OTP
     final success = await _authService.verifyOtp(phone, otp);
     
     setState(() => _isLoading = false);
@@ -36,7 +36,7 @@ class _OtpScreenState extends State<OtpScreen> {
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Invalid OTP. Use 123456 for testing.'),
+            content: Text('Invalid OTP. Please try again.'),
             backgroundColor: Colors.red,
           ),
         );

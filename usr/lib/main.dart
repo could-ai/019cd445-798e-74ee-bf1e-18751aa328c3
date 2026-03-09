@@ -1,9 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'integrations/supabase.dart';
 import 'screens/login_screen.dart';
 import 'screens/otp_screen.dart';
 import 'screens/home_screen.dart';
 
-void main() {
+void main() async {
+  // Ensure Flutter bindings are initialized before calling async methods
+  WidgetsFlutterBinding.ensureInitialized();
+  
+  // Initialize Supabase with the project's URL and Anon Key
+  await Supabase.initialize(
+    url: SupabaseConfig.supabaseUrl,
+    anonKey: SupabaseConfig.supabaseAnonKey,
+  );
+
   runApp(const MyApp());
 }
 
