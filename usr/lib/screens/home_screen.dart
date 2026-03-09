@@ -38,7 +38,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
       if (data != null) {
         _nameController.text = data['full_name'] ?? '';
-        _bioController.text = data['bio'] ?? '';
+        _bioController.text = data['handicap'] ?? '';
       }
     } catch (e) {
       debugPrint('Error loading profile: $e');
@@ -58,7 +58,7 @@ class _HomeScreenState extends State<HomeScreen> {
       final updates = {
         'auth_user_id': userId,
         'full_name': _nameController.text,
-        'bio': _bioController.text,
+        'handicap': _bioController.text,
       };
 
       // Upsert will insert if it doesn't exist, or update if it does
