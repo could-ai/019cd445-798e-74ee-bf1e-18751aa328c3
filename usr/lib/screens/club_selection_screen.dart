@@ -10,7 +10,14 @@ class ClubSelectionScreen extends StatefulWidget {
 
 class _ClubSelectionScreenState extends State<ClubSelectionScreen> {
   final _supabase = Supabase.instance.client;
+  
+  // Club State
   Map<String, dynamic>? _selectedClub;
+  
+  // Course State
+  List<Map<String, dynamic>> _courses = [];
+  Map<String, dynamic>? _selectedCourse;
+  bool _isLoadingCourses = false;
 
   Future<List<Map<String, dynamic>>> _searchClubs(String query) async {
     if (query.isEmpty) {
@@ -31,13 +38,48 @@ class _ClubSelectionScreenState extends State<ClubSelectionScreen> {
     }
   }
 
+  Future<void> _fetchCoursesForClub(String clubId) async {
+    setState(() {
+      _isLoadingCourses = true;
+      _courses = [];
+      _selectedCourse = null;
+    });
+
+    try {
+      final response = await _supabase
+          .from('course_header')
+          .select('id, name')
+          .eq('club_id', clubId)
+          .order('name');
+          
+      if (mounted) {
+        setState(() {
+          _courses = List<Map<String, dynamic>>.from(response);
+        });
+      }
+    } catch (e) {
+      debugPrint('Error fetching courses: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error loading courses: $e')),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoadingCourses = false;
+        });
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Select a Club'),
+        title: const Text('Select a Club & Course'),
       ),
-      body: Padding(
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(24.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -56,16 +98,31 @@ class _ClubSelectionScreenState extends State<ClubSelectionScreen> {
                 setState(() {
                   _selectedClub = selection;
                 });
+                // Fetch courses when a club is selected
+                _fetchCoursesForClub(selection['id'].toString());
               },
               fieldViewBuilder: (context, textEditingController, focusNode, onFieldSubmitted) {
                 return TextField(
                   controller: textEditingController,
                   focusNode: focusNode,
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     labelText: 'Club Name',
                     hintText: 'Start typing a club name...',
-                    border: OutlineInputBorder(),
-                    prefixIcon: Icon(Icons.search),
+                    border: const OutlineInputBorder(),
+                    prefixIcon: const Icon(Icons.search),
+                    suffixIcon: _selectedClub != null 
+                      ? IconButton(
+                          icon: const Icon(Icons.clear),
+                          onPressed: () {
+                            textEditingController.clear();
+                            setState(() {
+                              _selectedClub = null;
+                              _courses = [];
+                              _selectedCourse = null;
+                            });
+                          },
+                        )
+                      : null,
                   ),
                 );
               },
@@ -98,6 +155,8 @@ class _ClubSelectionScreenState extends State<ClubSelectionScreen> {
               },
             ),
             const SizedBox(height: 32),
+            
+            // Show Club and Course selection if a club is selected
             if (_selectedClub != null) ...[
               const Text(
                 'Selected Club:',
@@ -115,9 +174,67 @@ class _ClubSelectionScreenState extends State<ClubSelectionScreen> {
                     _selectedClub!['name'] as String,
                     style: const TextStyle(fontWeight: FontWeight.bold),
                   ),
-                  subtitle: Text('ID: ${_selectedClub!['id']}'),
                 ),
               ),
+              
+              const SizedBox(height: 32),
+              const Text(
+                'Select a Course:',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 16),
+              
+              if (_isLoadingCourses)
+                const Center(child: CircularProgressIndicator())
+              else if (_courses.isEmpty)
+                const Text(
+                  'No courses found for this club.', 
+                  style: TextStyle(color: Colors.grey, fontStyle: FontStyle.italic)
+                )
+              else
+                DropdownButtonFormField<Map<String, dynamic>>(
+                  decoration: const InputDecoration(
+                    border: OutlineInputBorder(),
+                    prefixIcon: Icon(Icons.flag),
+                  ),
+                  hint: const Text('Choose a course'),
+                  value: _selectedCourse,
+                  isExpanded: true,
+                  items: _courses.map((course) {
+                    return DropdownMenuItem<Map<String, dynamic>>(
+                      value: course,
+                      child: Text(course['name'] as String),
+                    );
+                  }).toList(),
+                  onChanged: (value) {
+                    setState(() {
+                      _selectedCourse = value;
+                    });
+                  },
+                ),
+                
+              if (_selectedCourse != null) ...[
+                const SizedBox(height: 32),
+                SizedBox(
+                  width: double.infinity,
+                  height: 50,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text('Selected ${_selectedCourse!['name']} at ${_selectedClub!['name']}'),
+                          backgroundColor: Colors.green,
+                        ),
+                      );
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.green,
+                      foregroundColor: Colors.white,
+                    ),
+                    child: const Text('Confirm Selection', style: TextStyle(fontSize: 16)),
+                  ),
+                ),
+              ]
             ]
           ],
         ),
