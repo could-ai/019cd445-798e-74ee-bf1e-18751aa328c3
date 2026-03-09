@@ -4,6 +4,7 @@ import 'integrations/supabase.dart';
 import 'screens/login_screen.dart';
 import 'screens/otp_screen.dart';
 import 'screens/home_screen.dart';
+import 'screens/club_selection_screen.dart';
 
 void main() async {
   // Ensure Flutter bindings are initialized before calling async methods
@@ -37,6 +38,7 @@ class MyApp extends StatelessWidget {
         '/login': (context) => const LoginScreen(),
         '/otp': (context) => const OtpScreen(),
         '/home': (context) => const HomeScreen(),
+        '/club_selection': (context) => const ClubSelectionScreen(),
       },
     );
   }
