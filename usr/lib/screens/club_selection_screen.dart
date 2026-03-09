@@ -19,6 +19,11 @@ class _ClubSelectionScreenState extends State<ClubSelectionScreen> {
   Map<String, dynamic>? _selectedCourse;
   bool _isLoadingCourses = false;
 
+  // Tee State
+  List<Map<String, dynamic>> _tees = [];
+  Map<String, dynamic>? _selectedTee;
+  bool _isLoadingTees = false;
+
   Future<List<Map<String, dynamic>>> _searchClubs(String query) async {
     if (query.isEmpty) {
       return [];
@@ -43,6 +48,8 @@ class _ClubSelectionScreenState extends State<ClubSelectionScreen> {
       _isLoadingCourses = true;
       _courses = [];
       _selectedCourse = null;
+      _tees = [];
+      _selectedTee = null;
     });
 
     try {
@@ -68,6 +75,41 @@ class _ClubSelectionScreenState extends State<ClubSelectionScreen> {
       if (mounted) {
         setState(() {
           _isLoadingCourses = false;
+        });
+      }
+    }
+  }
+
+  Future<void> _fetchTeesForCourse(String courseId) async {
+    setState(() {
+      _isLoadingTees = true;
+      _tees = [];
+      _selectedTee = null;
+    });
+
+    try {
+      final response = await _supabase
+          .from('course_tee_header')
+          .select('id, name, color')
+          .eq('course_id', courseId)
+          .order('name');
+          
+      if (mounted) {
+        setState(() {
+          _tees = List<Map<String, dynamic>>.from(response);
+        });
+      }
+    } catch (e) {
+      debugPrint('Error fetching tees: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error loading tees: $e')),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoadingTees = false;
         });
       }
     }
@@ -119,6 +161,8 @@ class _ClubSelectionScreenState extends State<ClubSelectionScreen> {
                               _selectedClub = null;
                               _courses = [];
                               _selectedCourse = null;
+                              _tees = [];
+                              _selectedTee = null;
                             });
                           },
                         )
@@ -209,11 +253,80 @@ class _ClubSelectionScreenState extends State<ClubSelectionScreen> {
                   onChanged: (value) {
                     setState(() {
                       _selectedCourse = value;
+                      _selectedTee = null;
+                      _tees = [];
                     });
+                    if (value != null) {
+                      _fetchTeesForCourse(value['id'].toString());
+                    }
                   },
                 ),
                 
               if (_selectedCourse != null) ...[
+                const SizedBox(height: 32),
+                const Text(
+                  'Select a Tee:',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 16),
+                
+                if (_isLoadingTees)
+                  const Center(child: CircularProgressIndicator())
+                else if (_tees.isEmpty)
+                  const Text(
+                    'No tees found for this course.', 
+                    style: TextStyle(color: Colors.grey, fontStyle: FontStyle.italic)
+                  )
+                else
+                  DropdownButtonFormField<Map<String, dynamic>>(
+                    decoration: const InputDecoration(
+                      border: OutlineInputBorder(),
+                      prefixIcon: Icon(Icons.sports_golf),
+                    ),
+                    hint: const Text('Choose a tee'),
+                    value: _selectedTee,
+                    isExpanded: true,
+                    items: _tees.map((tee) {
+                      // Parse the hex color from the database
+                      Color teeColor = Colors.grey;
+                      try {
+                        String hexColor = tee['color'].toString().replaceAll('#', '');
+                        if (hexColor.length == 6) {
+                          hexColor = 'FF$hexColor'; // Add full opacity
+                        }
+                        teeColor = Color(int.parse(hexColor, radix: 16));
+                      } catch (e) {
+                        // Fallback to grey if parsing fails
+                      }
+
+                      // Determine text color based on background brightness for readability
+                      Color textColor = teeColor.computeLuminance() > 0.5 ? Colors.black : Colors.white;
+
+                      return DropdownMenuItem<Map<String, dynamic>>(
+                        value: tee,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                          decoration: BoxDecoration(
+                            color: teeColor,
+                            borderRadius: BorderRadius.circular(4),
+                            border: Border.all(color: Colors.grey.shade400),
+                          ),
+                          child: Text(
+                            tee['name'] as String,
+                            style: TextStyle(color: textColor, fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                      );
+                    }).toList(),
+                    onChanged: (value) {
+                      setState(() {
+                        _selectedTee = value;
+                      });
+                    },
+                  ),
+              ],
+
+              if (_selectedTee != null) ...[
                 const SizedBox(height: 32),
                 SizedBox(
                   width: double.infinity,
@@ -222,7 +335,7 @@ class _ClubSelectionScreenState extends State<ClubSelectionScreen> {
                     onPressed: () {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
-                          content: Text('Selected ${_selectedCourse!['name']} at ${_selectedClub!['name']}'),
+                          content: Text('Selected ${_selectedTee!['name']} tee at ${_selectedCourse!['name']}'),
                           backgroundColor: Colors.green,
                         ),
                       );
