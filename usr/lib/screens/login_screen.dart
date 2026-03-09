@@ -54,7 +54,7 @@ class _LoginScreenState extends State<LoginScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const Icon(Icons.phone_android, size: 80, color: Colors.blue),
+            const Icon(Icons.sports_golf, size: 80, color: Colors.green),
             const SizedBox(height: 32),
             const Text(
               'Welcome Back',
@@ -84,7 +84,7 @@ class _LoginScreenState extends State<LoginScreen> {
               child: ElevatedButton(
                 onPressed: _isLoading ? null : _sendCode,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blue,
+                  backgroundColor: Colors.green,
                   foregroundColor: Colors.white,
                 ),
                 child: _isLoading 

@@ -16,7 +16,7 @@ class MyApp extends StatelessWidget {
       title: 'Supabase Phone Auth',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.green),
         useMaterial3: true,
       ),
       // CRITICAL: Always explicitly set initialRoute to '/' and register it in routes

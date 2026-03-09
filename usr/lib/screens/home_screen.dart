@@ -28,7 +28,7 @@ class HomeScreen extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: const [
-            Icon(Icons.check_circle, size: 100, color: Colors.green),
+            Icon(Icons.golf_course, size: 100, color: Colors.green),
             SizedBox(height: 24),
             Text(
               'Authentication Successful!',

@@ -66,7 +66,7 @@ class _OtpScreenState extends State<OtpScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const Icon(Icons.message, size: 80, color: Colors.blue),
+            const Icon(Icons.sports_golf, size: 80, color: Colors.green),
             const SizedBox(height: 32),
             const Text(
               'Enter Verification Code',
@@ -98,7 +98,7 @@ class _OtpScreenState extends State<OtpScreen> {
               child: ElevatedButton(
                 onPressed: _isLoading ? null : () => _verifyCode(phone),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blue,
+                  backgroundColor: Colors.green,
                   foregroundColor: Colors.white,
                 ),
                 child: _isLoading 
