@@ -24,6 +24,9 @@ class _ClubSelectionScreenState extends State<ClubSelectionScreen> {
   Map<String, dynamic>? _selectedTee;
   bool _isLoadingTees = false;
 
+  // Confirmation State
+  bool _isConfirming = false;
+
   Future<List<Map<String, dynamic>>> _searchClubs(String query) async {
     if (query.isEmpty) {
       return [];
@@ -110,6 +113,90 @@ class _ClubSelectionScreenState extends State<ClubSelectionScreen> {
       if (mounted) {
         setState(() {
           _isLoadingTees = false;
+        });
+      }
+    }
+  }
+
+  Future<Map<String, dynamic>?> _getCurrentUserRecord() async {
+    final userId = _supabase.auth.currentUser?.id;
+    if (userId == null) return null;
+
+    try {
+      return await _supabase
+          .from('user')
+          .select()
+          .eq('auth_user_id', userId)
+          .maybeSingle();
+    } catch (e) {
+      debugPrint('Error fetching user record: $e');
+      return null;
+    }
+  }
+
+  // ===========================================================================
+  // TODO: Implement your custom logic in this function
+  // ===========================================================================
+  Future<Map<String, dynamic>> processSelectionData(
+    Map<String, dynamic> selectedTee,
+    Map<String, dynamic> currentUser,
+  ) async {
+    // Replace this with your actual code that returns the JSON object
+    debugPrint('Processing tee: ${selectedTee['name']} for user: ${currentUser['user_name']}');
+    
+    return {
+      'status': 'success',
+      'message': 'This is a placeholder JSON response',
+      'tee_data': selectedTee,
+      'user_data': currentUser,
+    };
+  }
+  // ===========================================================================
+
+  Future<void> _handleConfirmation() async {
+    if (_selectedTee == null) return;
+
+    setState(() {
+      _isConfirming = true;
+    });
+
+    try {
+      // 1. Fetch the current user's record from the database
+      final userRecord = await _getCurrentUserRecord();
+      
+      if (userRecord == null) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Error: Could not fetch user profile. Please update your profile first.'), backgroundColor: Colors.red),
+          );
+        }
+        return;
+      }
+
+      // 2. Pass both records into the placeholder function
+      final jsonResult = await processSelectionData(_selectedTee!, userRecord);
+      
+      // 3. Log the result (ready for your next instructions)
+      debugPrint('JSON Result generated: $jsonResult');
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Selection confirmed! JSON generated successfully.'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error during confirmation: $e'), backgroundColor: Colors.red),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isConfirming = false;
         });
       }
     }
@@ -332,19 +419,18 @@ class _ClubSelectionScreenState extends State<ClubSelectionScreen> {
                   width: double.infinity,
                   height: 50,
                   child: ElevatedButton(
-                    onPressed: () {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text('Selected ${_selectedTee!['name']} tee at ${_selectedCourse!['name']}'),
-                          backgroundColor: Colors.green,
-                        ),
-                      );
-                    },
+                    onPressed: _isConfirming ? null : _handleConfirmation,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.green,
                       foregroundColor: Colors.white,
                     ),
-                    child: const Text('Confirm Selection', style: TextStyle(fontSize: 16)),
+                    child: _isConfirming
+                        ? const SizedBox(
+                            height: 24,
+                            width: 24,
+                            child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                          )
+                        : const Text('Confirm Selection', style: TextStyle(fontSize: 16)),
                   ),
                 ),
               ]
