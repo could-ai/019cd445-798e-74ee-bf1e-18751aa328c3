@@ -87,6 +87,10 @@ class _RoundHistoryScreenState extends State<RoundHistoryScreen> {
                       elevation: 2,
                       margin: const EdgeInsets.only(bottom: 12.0),
                       child: ListTile(
+                        onTap: () {
+                          // Navigate to the active round screen and pass the selected record as JSON
+                          Navigator.pushNamed(context, '/active_round', arguments: round);
+                        },
                         leading: const CircleAvatar(
                           backgroundColor: Colors.green,
                           child: Icon(Icons.sports_golf, color: Colors.white),
@@ -107,6 +111,7 @@ class _RoundHistoryScreenState extends State<RoundHistoryScreen> {
                             ),
                           ],
                         ),
+                        trailing: const Icon(Icons.chevron_right, color: Colors.grey),
                       ),
                     );
                   },
