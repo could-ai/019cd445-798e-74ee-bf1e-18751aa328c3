@@ -145,13 +145,12 @@ class _ClubSelectionScreenState extends State<ClubSelectionScreen> {
     debugPrint('Processing tee: ${selectedTee['name']} for user: ${currentUser['user_name']}');
     
     return {
-    'user_handicap':79,
-     'handicap':80,
+      'user_handicap': 79,
+      'handicap': 80,
       'slope_rating': 81,
       'course_rating': 82,
       'par': 83
     };
-  
   }
   // ===========================================================================
 
@@ -178,16 +177,12 @@ class _ClubSelectionScreenState extends State<ClubSelectionScreen> {
       // 2. Pass both records into the placeholder function
       final jsonResult = await processSelectionData(_selectedTee!, userRecord);
       
-      // 3. Log the result (ready for your next instructions)
+      // 3. Log the result and navigate to the summary screen
       debugPrint('JSON Result generated: $jsonResult');
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Selection confirmed! JSON generated successfully.'),
-            backgroundColor: Colors.green,
-          ),
-        );
+        // Navigate to the summary screen, passing the JSON result as arguments
+        Navigator.pushNamed(context, '/summary', arguments: jsonResult);
       }
     } catch (e) {
       if (mounted) {
