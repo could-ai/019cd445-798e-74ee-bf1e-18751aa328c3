@@ -260,7 +260,31 @@ class _ActiveRoundScreenState extends State<ActiveRoundScreen> {
                     ),
                   ),
                   
-                  const SizedBox(height: 48),
+                  const SizedBox(height: 16),
+                  
+                  // Add Player Button (Non-functional)
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: OutlinedButton.icon(
+                        onPressed: () {
+                          // Non-functional as requested
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('Add Player functionality coming soon!')),
+                          );
+                        },
+                        icon: const Icon(Icons.person_add),
+                        label: const Text('Add Player'),
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: Colors.green,
+                          side: const BorderSide(color: Colors.green),
+                        ),
+                      ),
+                    ),
+                  ),
+                  
+                  const SizedBox(height: 32),
                   
                   // Display the summary of the passed data below the scorecard
                   if (_roundData.isNotEmpty)
