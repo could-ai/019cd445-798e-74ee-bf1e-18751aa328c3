@@ -67,7 +67,8 @@ class SelectionSummaryScreen extends StatelessWidget {
           padding: const EdgeInsets.all(16.0),
           child: ElevatedButton(
             onPressed: () {
-              Navigator.pushNamed(context, '/active_round');
+              // Pass the JSON data to the active round screen
+              Navigator.pushNamed(context, '/active_round', arguments: data);
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.green,
