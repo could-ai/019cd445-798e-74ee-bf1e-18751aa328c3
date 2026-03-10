@@ -92,14 +92,14 @@ class _RoundHistoryScreenState extends State<RoundHistoryScreen> {
                           child: Icon(Icons.sports_golf, color: Colors.white),
                         ),
                         title: Text(
-                          courseName,
+                          name, // Changed to display the player's name as the bold title
                           style: const TextStyle(fontWeight: FontWeight.bold),
                         ),
                         subtitle: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             const SizedBox(height: 4),
-                            Text('Player: $name'),
+                            Text('Course: $courseName'), // Changed to display the course name with "Course:" label
                             const SizedBox(height: 2),
                             Text(
                               'Date: ${_formatDate(createdDate)}',
