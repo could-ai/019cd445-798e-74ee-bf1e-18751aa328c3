@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'integrations/supabase.dart';
+import 'screens/splash_screen.dart';
 import 'screens/login_screen.dart';
 import 'screens/otp_screen.dart';
 import 'screens/home_screen.dart';
@@ -37,7 +38,7 @@ class MyApp extends StatelessWidget {
       // CRITICAL: Always explicitly set initialRoute to '/' and register it in routes
       initialRoute: '/',
       routes: {
-        '/': (context) => const LoginScreen(),
+        '/': (context) => const SplashScreen(), // Set SplashScreen as the initial route
         '/login': (context) => const LoginScreen(),
         '/otp': (context) => const OtpScreen(),
         '/home': (context) => const HomeScreen(),
