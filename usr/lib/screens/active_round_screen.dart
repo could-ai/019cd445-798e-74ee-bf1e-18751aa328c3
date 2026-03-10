@@ -17,6 +17,9 @@ class _ActiveRoundScreenState extends State<ActiveRoundScreen> {
   
   // Controllers for the 18 holes
   final Map<int, TextEditingController> _scoreControllers = {};
+  
+  // Scroll controller for the horizontal scorecard
+  final ScrollController _horizontalScrollController = ScrollController();
 
   @override
   void initState() {
@@ -43,6 +46,7 @@ class _ActiveRoundScreenState extends State<ActiveRoundScreen> {
     for (var controller in _scoreControllers.values) {
       controller.dispose();
     }
+    _horizontalScrollController.dispose();
     super.dispose();
   }
 
@@ -154,68 +158,73 @@ class _ActiveRoundScreenState extends State<ActiveRoundScreen> {
                   ),
                   const SizedBox(height: 8),
                   
-                  // Horizontal scrolling for the 18-hole grid
-                  SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                      child: Card(
-                        elevation: 4,
-                        clipBehavior: Clip.antiAlias,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                        child: DataTable(
-                          headingRowColor: WidgetStateProperty.all(Colors.green),
-                          columnSpacing: 20,
-                          dataRowMaxHeight: 60,
-                          columns: [
-                            const DataColumn(
-                              label: Text(
-                                'Player',
-                                style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16),
-                              ),
-                            ),
-                            // Generate columns for holes 1 to 18
-                            for (int i = 1; i <= 18; i++)
-                              DataColumn(
+                  // Card stays fixed width, content inside scrolls horizontally
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    child: Card(
+                      elevation: 4,
+                      clipBehavior: Clip.antiAlias,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                      child: Scrollbar(
+                        controller: _horizontalScrollController,
+                        thumbVisibility: true, // Makes the scrollbar always visible
+                        child: SingleChildScrollView(
+                          controller: _horizontalScrollController,
+                          scrollDirection: Axis.horizontal,
+                          child: DataTable(
+                            headingRowColor: WidgetStateProperty.all(Colors.green),
+                            columnSpacing: 20,
+                            dataRowMaxHeight: 60,
+                            columns: [
+                              const DataColumn(
                                 label: Text(
-                                  '$i',
-                                  style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16),
+                                  'Player',
+                                  style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16),
                                 ),
-                                numeric: true,
                               ),
-                          ],
-                          rows: [
-                            DataRow(
-                              cells: [
-                                DataCell(
-                                  Text(
-                                    _userName,
-                                    style: const TextStyle(fontWeight: FontWeight.bold),
+                              // Generate columns for holes 1 to 18
+                              for (int i = 1; i <= 18; i++)
+                                DataColumn(
+                                  label: Text(
+                                    '$i',
+                                    style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16),
                                   ),
+                                  numeric: true,
                                 ),
-                                // Generate input cells for holes 1 to 18
-                                for (int i = 1; i <= 18; i++)
+                            ],
+                            rows: [
+                              DataRow(
+                                cells: [
                                   DataCell(
-                                    SizedBox(
-                                      width: 40,
-                                      child: TextField(
-                                        controller: _scoreControllers[i],
-                                        keyboardType: TextInputType.number,
-                                        textAlign: TextAlign.center,
-                                        maxLength: 2,
-                                        decoration: const InputDecoration(
-                                          counterText: '', // Hide the character counter
-                                          contentPadding: EdgeInsets.symmetric(vertical: 8),
-                                          border: OutlineInputBorder(),
-                                          isDense: true,
-                                        ),
-                                        onChanged: (value) => _saveScore(i, value),
-                                      ),
+                                    Text(
+                                      _userName,
+                                      style: const TextStyle(fontWeight: FontWeight.bold),
                                     ),
                                   ),
-                              ],
-                            ),
-                          ],
+                                  // Generate input cells for holes 1 to 18
+                                  for (int i = 1; i <= 18; i++)
+                                    DataCell(
+                                      SizedBox(
+                                        width: 40,
+                                        child: TextField(
+                                          controller: _scoreControllers[i],
+                                          keyboardType: TextInputType.number,
+                                          textAlign: TextAlign.center,
+                                          maxLength: 2,
+                                          decoration: const InputDecoration(
+                                            counterText: '', // Hide the character counter
+                                            contentPadding: EdgeInsets.symmetric(vertical: 8),
+                                            border: OutlineInputBorder(),
+                                            isDense: true,
+                                          ),
+                                          onChanged: (value) => _saveScore(i, value),
+                                        ),
+                                      ),
+                                    ),
+                                ],
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ),
