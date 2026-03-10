@@ -12,6 +12,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final _phoneController = TextEditingController();
   final _authService = AuthService();
   bool _isLoading = false;
+  bool _isLogin = true; // Toggle between Login and Sign Up UI
 
   Future<void> _sendCode() async {
     final phone = _phoneController.text.trim();
@@ -25,6 +26,7 @@ class _LoginScreenState extends State<LoginScreen> {
     setState(() => _isLoading = true);
     
     // Call the real Supabase auth service
+    // Note: Supabase signInWithOtp automatically creates a new user if one doesn't exist
     final success = await _authService.sendOtp(phone);
     
     setState(() => _isLoading = false);
@@ -54,7 +56,7 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Login'),
+        title: Text(_isLogin ? 'Login' : 'Create Account'),
         centerTitle: true,
       ),
       body: Padding(
@@ -65,15 +67,17 @@ class _LoginScreenState extends State<LoginScreen> {
           children: [
             const Icon(Icons.sports_golf, size: 80, color: Colors.green),
             const SizedBox(height: 32),
-            const Text(
-              'Welcome Back',
-              style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+            Text(
+              _isLogin ? 'Welcome Back' : 'Join Us',
+              style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 8),
-            const Text(
-              'Enter your phone number to sign in or create an account.',
-              style: TextStyle(fontSize: 16, color: Colors.grey),
+            Text(
+              _isLogin 
+                  ? 'Enter your phone number to sign in.' 
+                  : 'Enter your phone number to create a new account.',
+              style: const TextStyle(fontSize: 16, color: Colors.grey),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 32),
@@ -102,7 +106,21 @@ class _LoginScreenState extends State<LoginScreen> {
                       width: 24, 
                       child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2)
                     ) 
-                  : const Text('Send Code', style: TextStyle(fontSize: 16)),
+                  : Text(_isLogin ? 'Send Login Code' : 'Send Signup Code', style: const TextStyle(fontSize: 16)),
+              ),
+            ),
+            const SizedBox(height: 16),
+            TextButton(
+              onPressed: () {
+                setState(() {
+                  _isLogin = !_isLogin;
+                });
+              },
+              child: Text(
+                _isLogin 
+                    ? "Don't have an account? Sign up" 
+                    : "Already have an account? Log in",
+                style: const TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
               ),
             ),
           ],
