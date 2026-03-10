@@ -151,7 +151,7 @@ class _ClubSelectionScreenState extends State<ClubSelectionScreen> {
       'course_rating': 82,
       'par': 83
     };
-    };
+  
   }
   // ===========================================================================
 
