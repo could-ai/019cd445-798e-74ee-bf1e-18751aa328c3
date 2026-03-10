@@ -145,10 +145,12 @@ class _ClubSelectionScreenState extends State<ClubSelectionScreen> {
     debugPrint('Processing tee: ${selectedTee['name']} for user: ${currentUser['user_name']}');
     
     return {
-      'status': 'success',
-      'message': 'This is a placeholder JSON response',
-      'tee_data': selectedTee,
-      'user_data': currentUser,
+    'user_handicap':79,
+     'handicap':80,
+      'slope_rating': 81,
+      'course_rating': 82,
+      'par': 83
+    };
     };
   }
   // ===========================================================================
