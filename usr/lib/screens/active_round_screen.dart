@@ -158,74 +158,104 @@ class _ActiveRoundScreenState extends State<ActiveRoundScreen> {
                   ),
                   const SizedBox(height: 8),
                   
-                  // Card stays fixed width, content inside scrolls horizontally
+                  // Custom Table Layout for Fixed Column + Scrollable Columns
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16.0),
                     child: Card(
                       elevation: 4,
                       clipBehavior: Clip.antiAlias,
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                      child: Scrollbar(
-                        controller: _horizontalScrollController,
-                        thumbVisibility: true, // Makes the scrollbar always visible
-                        child: SingleChildScrollView(
-                          controller: _horizontalScrollController,
-                          scrollDirection: Axis.horizontal,
-                          child: DataTable(
-                            headingRowColor: WidgetStateProperty.all(Colors.green),
-                            columnSpacing: 20,
-                            dataRowMaxHeight: 60,
-                            columns: [
-                              const DataColumn(
-                                label: Text(
-                                  'Player',
-                                  style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16),
-                                ),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Fixed Player Column
+                          Container(
+                            width: 100,
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              border: Border(
+                                right: BorderSide(color: Colors.grey.shade300),
                               ),
-                              // Generate columns for holes 1 to 18
-                              for (int i = 1; i <= 18; i++)
-                                DataColumn(
-                                  label: Text(
-                                    '$i',
-                                    style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16),
+                            ),
+                            child: Column(
+                              children: [
+                                Container(
+                                  height: 56,
+                                  color: Colors.green,
+                                  alignment: Alignment.centerLeft,
+                                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                                  child: const Text(
+                                    'Player',
+                                    style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16),
                                   ),
-                                  numeric: true,
                                 ),
-                            ],
-                            rows: [
-                              DataRow(
-                                cells: [
-                                  DataCell(
-                                    Text(
-                                      _userName,
-                                      style: const TextStyle(fontWeight: FontWeight.bold),
-                                    ),
+                                Container(
+                                  height: 60,
+                                  alignment: Alignment.centerLeft,
+                                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                                  child: Text(
+                                    _userName,
+                                    style: const TextStyle(fontWeight: FontWeight.bold),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
                                   ),
-                                  // Generate input cells for holes 1 to 18
-                                  for (int i = 1; i <= 18; i++)
-                                    DataCell(
-                                      SizedBox(
-                                        width: 40,
+                                ),
+                              ],
+                            ),
+                          ),
+                          
+                          // Scrollable Holes Columns
+                          Expanded(
+                            child: SingleChildScrollView(
+                              controller: _horizontalScrollController,
+                              scrollDirection: Axis.horizontal,
+                              // No Scrollbar widget here to keep it hidden
+                              child: Column(
+                                children: [
+                                  // Header Row (1 to 18)
+                                  Row(
+                                    children: List.generate(18, (index) {
+                                      return Container(
+                                        width: 56,
+                                        height: 56,
+                                        color: Colors.green,
+                                        alignment: Alignment.center,
+                                        child: Text(
+                                          '${index + 1}',
+                                          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16),
+                                        ),
+                                      );
+                                    }),
+                                  ),
+                                  // Data Row (TextFields)
+                                  Row(
+                                    children: List.generate(18, (index) {
+                                      final hole = index + 1;
+                                      return Container(
+                                        width: 56,
+                                        height: 60,
+                                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
+                                        alignment: Alignment.center,
                                         child: TextField(
-                                          controller: _scoreControllers[i],
+                                          controller: _scoreControllers[hole],
                                           keyboardType: TextInputType.number,
                                           textAlign: TextAlign.center,
                                           maxLength: 2,
                                           decoration: const InputDecoration(
                                             counterText: '', // Hide the character counter
-                                            contentPadding: EdgeInsets.symmetric(vertical: 8),
+                                            contentPadding: EdgeInsets.zero,
                                             border: OutlineInputBorder(),
-                                            isDense: true,
                                           ),
-                                          onChanged: (value) => _saveScore(i, value),
+                                          onChanged: (value) => _saveScore(hole, value),
                                         ),
-                                      ),
-                                    ),
+                                      );
+                                    }),
+                                  ),
                                 ],
                               ),
-                            ],
+                            ),
                           ),
-                        ),
+                        ],
                       ),
                     ),
                   ),
