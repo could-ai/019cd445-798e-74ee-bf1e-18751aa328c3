@@ -28,6 +28,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<void> _loadProfile() async {
     try {
       final userId = _authService.currentUser?.id;
+      debugPrint('UserId: $userId');
       if (userId == null) return;
 
       final data = await _supabase
