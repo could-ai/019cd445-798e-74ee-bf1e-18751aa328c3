@@ -149,7 +149,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   const Divider(height: 48),
                   const Text(
-                    'Golf Clubs',
+                    'Golf Clubs & Rounds',
                     style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                     textAlign: TextAlign.center,
                   ),
@@ -160,6 +160,17 @@ class _HomeScreenState extends State<HomeScreen> {
                     },
                     icon: const Icon(Icons.golf_course, color: Colors.green),
                     label: const Text('Find a Golf Club'),
+                    style: OutlinedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  OutlinedButton.icon(
+                    onPressed: () {
+                      Navigator.pushNamed(context, '/round_history');
+                    },
+                    icon: const Icon(Icons.history, color: Colors.green),
+                    label: const Text('View Round History'),
                     style: OutlinedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(vertical: 16),
                     ),

@@ -7,6 +7,7 @@ import 'screens/home_screen.dart';
 import 'screens/club_selection_screen.dart';
 import 'screens/selection_summary_screen.dart';
 import 'screens/active_round_screen.dart';
+import 'screens/round_history_screen.dart';
 
 void main() async {
   // Ensure Flutter bindings are initialized before calling async methods
@@ -43,6 +44,7 @@ class MyApp extends StatelessWidget {
         '/club_selection': (context) => const ClubSelectionScreen(),
         '/summary': (context) => const SelectionSummaryScreen(),
         '/active_round': (context) => const ActiveRoundScreen(),
+        '/round_history': (context) => const RoundHistoryScreen(),
       },
     );
   }
